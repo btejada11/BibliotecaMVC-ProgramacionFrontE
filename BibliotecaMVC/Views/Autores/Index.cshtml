@@ -1,0 +1,33 @@
+﻿@model List<BibliotecaMVC.Models.Autor>
+<h2>Autores </h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Fecha de nacimiento</th>
+            <th>Nacionalidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var autor in Model)
+        {
+            <tr>
+                <td>@autor.Id</td>
+                <td>@autor.Nombre</td>
+                <td>@autor.Apellido</td>
+                <td>@autor.fechaNacimiento</td>
+                <td>@autor.Nacionalidad</td>
+                <td> @if (autor.Activo)
+                    {
+                        <span class="badge bg-success">Activo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactivo</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>

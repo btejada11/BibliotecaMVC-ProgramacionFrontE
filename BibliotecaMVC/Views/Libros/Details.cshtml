@@ -1,0 +1,17 @@
+﻿@model BibliotecaMVC.Models.Libro
+@{
+    ViewData["Title"] = "Detalles del Libro";
+}
+<h1>@Model.Titulo</h1>
+<dl class="row">
+    <dt>Autor</dt>
+    <dd>@Model.Autor</dd>
+    <dt>Categoría</dt>
+    <dd>@Model.Categoria</dd>
+    <dt>Precio</dt>
+    <dd>@Model.Precio.ToString("C")</dd>
+    <dt>Disponible para préstamo</dt>
+    <dd>@(Model.Disponible ? "Sí" : "No")</dd>
+</dl>
+<a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary">Editar</a>
+<a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>

@@ -1,0 +1,18 @@
+﻿@model BibliotecaMVC.Models.Autor
+@{
+    ViewData["Title"] = "Detalles del autor";
+}
+
+<h1>@Model.Nombre </h1>
+<dl class="row">
+    <dt>Nacionalidad</dt>
+    <dd>@Model.Nacionalidad</dd>
+
+    <dt>Fecha de nacimiento</dt>
+    <dd>@Model.FechaNacimiento.ToString("yyyy-MM-dd")</dd>
+
+    <dt>Edad</dt>
+    <dd>@(DateTime.Now.Year - Model.FechaNacimiento.Year)</dd>
+</dl>
+
+<a asp-action="Index" class="btn btn-primary">Volver al listado</a>

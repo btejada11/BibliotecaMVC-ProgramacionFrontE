@@ -1,38 +1,52 @@
-﻿@model List<BibliotecaMVC.Models.Libro>
-<h2>Catálogo de libros</h2>
-<table class="table table-striped">
-    <thead> 
-        <tr>
-            <th>ID</th>
-            <th>Titulo</th>
-            <th>Autor</th>
-            <th>Categoria</th>
-            <th>Precio</th>
-            <th>Estado</th>
-        </tr>
-    </thead>
-    <tbody> 
-        @foreach (var libro in Model)
-        {
+﻿@model IEnumerable<BibliotecaMVC.Models.Libro>
+
+@{
+    ViewData["Title"] = "Listado de Libros";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>Hay @Model.Count() libros registrados.</p>
+
+<a class="btn btn-primary mb-3" asp-action="Create">Nuevo libro +</a>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead class="table-dark">
             <tr>
-                <td>@libro.ID</td>
-                <td>@libro.Titulo</td>
-                <td>@libro.Autor</td>
-                <td>@libro.Categoria</td>
-                <td>$@libro.Precio</td>
-                <td>
-                    @if (libro.Disponible)
-                    {
-                        <span class="badge bg-success">Disponible</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Prestado</span>
-                    }
-                </td>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Acciones</th>
             </tr>
-        }
-
-    </tbody>
-</table>
-
+        </thead>
+        <tbody>
+            @foreach (var libro in Model)
+            {
+                <tr>
+                    <td><strong>@libro.Titulo</strong></td>
+                    <td>@libro.Autor</td>
+                    <td>@libro.Categoria</td>
+                    <td>$@libro.Precio.ToString("F2")</td>
+                    <td>
+                        @if (libro.Disponible)
+                        {
+                            <span class="badge bg-success">Disponible</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Prestado / No disponible</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@libro.ID" class="btn btn-sm btn-outline-info">Ver</a>
+                        <a asp-action="Edit" asp-route-id="@libro.ID" class="btn btn-sm btn-outline-secondary">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@libro.ID" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

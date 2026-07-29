@@ -1,33 +1,28 @@
-﻿@model List<BibliotecaMVC.Models.Autor>
-<h2>Autores </h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Fecha de nacimiento</th>
-            <th>Nacionalidad</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var autor in Model)
-        {
-            <tr>
-                <td>@autor.Id</td>
-                <td>@autor.Nombre</td>
-                <td>@autor.Apellido</td>
-                <td>@autor.fechaNacimiento</td>
-                <td>@autor.Nacionalidad</td>
-                <td> @if (autor.Activo)
-                    {
-                        <span class="badge bg-success">Activo</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Inactivo</span>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
+﻿@model IEnumerable<BibliotecaMVC.Models.Autor>
+@{
+    ViewData["Title"] = "Listado de autores";
+}
+<h1>@ViewData["Title"]</h1>
+<p> Hay @Model.Count() autores en la lista.</p>
+
+<a class="btn btn-primary" asp-action="Create">Nuevo autor +</a>
+<div class="row">
+    @foreach (var autor in Model)
+    {
+        <div class="col-md-6">
+            <div class="card mb-3">  
+                <div class="card-body">
+                    <h5>@autor.Nombre</h5>
+                    <h6>@autor.Nacionalidad</h6>
+                    <p>Edad: @(DateTime.Now.Year-autor.FechaNacimiento.Year)</p>
+
+                    <a asp-action="Details" asp-route-id="@autor.Id">Ver</a>
+                    <a asp-action="Edit" asp-route-id="@autor.Id" class="btn btn-outline-secondary">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@autor.Id" class="btn btn-outline-danger">Eliminar</a>
+                </div>
+            </div>
+
+
+        </div>
+    }
+</div>

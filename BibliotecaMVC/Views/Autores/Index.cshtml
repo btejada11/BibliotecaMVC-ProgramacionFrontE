@@ -2,27 +2,49 @@
 @{
     ViewData["Title"] = "Listado de autores";
 }
-<h1>@ViewData["Title"]</h1>
-<p> Hay @Model.Count() autores en la lista.</p>
 
-<a class="btn btn-primary" asp-action="Create">Nuevo autor +</a>
-<div class="row">
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
+    <div>
+        <h1 class="display-5 text-white mb-0">@ViewData["Title"]</h1>
+        <p class="lead text-muted mb-0">Hay <span class="badge bg-indigo text-gradient fs-4 px-0">@Model.Count()</span> autores registrados.</p>
+    </div>
+
+    <a class="btn btn-custom" asp-action="Create"><i class="bi bi-plus-lg"></i> Nuevo autor +</a>
+</div>
+
+
+<div class="flex-cards-container justify-content-start">
     @foreach (var autor in Model)
     {
-        <div class="col-md-6">
-            <div class="card mb-3">  
-                <div class="card-body">
-                    <h5>@autor.Nombre</h5>
-                    <h6>@autor.Nacionalidad</h6>
-                    <p>Edad: @(DateTime.Now.Year-autor.FechaNacimiento.Year)</p>
+       
+        <div class="flex-card align-items-stretch text-start m-0 text-start" style="flex: 1 1 calc(50% - 25px); max-width: 100%;">
+            <div class="d-flex flex-column h-100 justify-content-between w-100 text-start">
 
-                    <a asp-action="Details" asp-route-id="@autor.Id">Ver</a>
-                    <a asp-action="Edit" asp-route-id="@autor.Id" class="btn btn-outline-secondary">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@autor.Id" class="btn btn-outline-danger">Eliminar</a>
+             
+                <div>
+                    <h3 class="text-white mb-1">@autor.Nombre @autor.Apellido</h3>
+                    <h6 class="text-info mb-3"><i class="bi bi-geo-alt"></i> @autor.Nacionalidad</h6>
+
+                  
+                    <p class="mb-0 text-light opacity-75">
+                        <strong class="text-white">Edad:</strong> @(DateTime.Now.Year - autor.FechaNacimiento.Year) años
+                    </p>
+                </div>
+
+             
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                    <a asp-action="Details" asp-route-id="@autor.Id" class="btn btn-sm btn-outline-info px-3">
+                        Ver
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@autor.Id" class="btn btn-sm btn-outline-warning px-3">
+                        Editar
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@autor.Id" class="btn btn-sm btn-outline-danger px-3">
+                        Eliminar
+                    </a>
                 </div>
             </div>
-
-
         </div>
     }
 </div>

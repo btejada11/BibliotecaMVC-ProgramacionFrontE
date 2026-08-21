@@ -1,46 +1,95 @@
-﻿<div class="container mt-5">
-    <div class="row align-items-center">
-        <div class="col-md-6">
-            <h1 class="display-4">
-                Biblioteca MVC
-            </h1>
-            <p class="lead">
-                Bienvenido al sistema de gestión de la biblioteca. Esperamos que disfrute de su experiencia.
-            </p>
-            <a asp-controller="Home" asp-action="AboutUs" class="btn btn-primary">Más información</a>
-        </div>
-        <div class="col-md-6 text-center">
-            <img src="https://picsum.photos/500/350" class="img-fluid rounded shadow" alt="Biblioteca" />
-
-        </div>
-    </div>
-</div>
-<div class="container mt-5"> 
-    <div class="row text-center">
-        <div class="col-md-4">
-             <h2 class="text-primary">500+</h2>
-             <p>Libros registrados</p>
-            <a asp-controller="Libros" asp-action="Index" class="btn btn-primary">Explorar libros</a>
-        </div>
-        <div class="col-md-4">
-            <h2 class="text-primary">120+</h2>
-            <p>Autores registrados</p>
-            <a asp-controller="Autores" asp-action="Index" class="btn btn-primary">Explorar autores</a>
-        </div>
-        <div class="col-md-4">
-            <h2 class="text-primary">25+</h2>
-            <p>Categorías literarias</p>
-            <a asp-controller="Home" asp-action="Categorias" class="btn btn-primary">Explorar categorías</a>
-        </div>
-    </div>
-</div>
+﻿<!-- Encabezado de la Página -->
+<header class="about-header">
+    <h1>BibliotecaMVC</h1>
+    <p>Sistema web para la administración y consulta de información de biblioteca.</p>
+</header>
 
 <div class="container mt-5">
-    <div class="bg-primary text-white rounded p-5 text-center">
-        <h2>Explora nuestra biblioteca virtual</h2>
-        <p>Descubre una gran colección de libros y recursos en nuestra biblioteca digital.</p>
-        <a asp-controller="Home" asp-action="AboutUs" class="btn btn-outline-light">Acerca de la biblioteca</a>
-    </div>
+    <!-- Sección Sobre Nosotros (Organizada con Flexbox) -->
+    <section class="about-container">
+        <article class="about-content">
+            <h2>¿Quiénes Somos?</h2>
+            <p>Somos una biblioteca virtual que busca brindar a los usuarios una experiencia de consulta y administración de información de manera rápida y sencilla.</p>
+        </article>
+
+        <aside class="about-info">
+            <h3>Misión</h3>
+            <p>Nuestra misión es brindar a los usuarios una experiencia de consulta y administración de información de manera rápida y sencilla.</p>
+        </aside>
+    </section>
+
+    <!-- Componentes reutilizables: Tarjetas de Información (Organizadas con Flexbox) -->
+    <section class="cards-section">
+        <div class="info-card">
+            <div>
+                <h3>📚 Préstamos Digitales</h3>
+                <p>Accede a cientos de libros electrónicos y realiza préstamos en línea desde cualquier dispositivo.</p>
+            </div>
+            <a asp-controller="Libros" asp-action="Index">Más información →</a>
+        </div>
+
+        <div class="info-card">
+            <div>
+                <h3>💻 Consulta Virtual</h3>
+                <p>Consulta el catálogo de la biblioteca en tiempo real y encuentra fácilmente libros, autores y categorías.</p>
+            </div>
+            <a asp-controller="Libros" asp-action="Index">Explorar catálogo →</a>
+        </div>
+    </section>
+
+    <!-- Imagen informativa -->
+    <section class="team-section">
+        <figure>
+            <img src="https://unsplash.com" alt="Biblioteca Virtual" class="img-fluid">
+            <figcaption>Biblioteca Virtual desarrollada con ASP.NET Core MVC</figcaption>
+        </figure>
+    </section>
+
+    <!-- Sección de Destacados (Organizada con CSS Grid Avanzado) -->
+    <section class="mt-5">
+        <h3 class="text-white mb-4 font-weight-bold">Destacados y Servicios Virtuales</h3>
+
+        <div class="grid-biblioteca">
+            <!-- Item Grande (Ocupa 2 columnas en escritorio) -->
+            <div class="grid-item item-grande">
+                <div>
+                    <span class="grid-tag">📖 Libro del Mes</span>
+                    <h4 class="text-white">Don Quijote de la Mancha</h4>
+                    <p class="text-muted small">Explora la obra maestra de Miguel de Cervantes en nuestra edición digital interactiva con notas al pie y análisis crítico.</p>
+                </div>
+                <a asp-controller="Libros" asp-action="Details" asp-route-id="1" class="text-primary mt-2 font-weight-bold" style="text-decoration: none;">Leer ahora →</a>
+            </div>
+
+            <!-- Item Alto (Ocupa 2 filas en escritorio) -->
+            <div class="grid-item item-alto">
+                <div>
+                    <span class="grid-tag alt">⚡ Soporte Virtual</span>
+                    <h4 class="text-white">Disponibilidad 24/7</h4>
+                    <p class="text-muted small">Nuestra plataforma web y sistema de préstamos digitales están activos de manera ininterrumpida todos los días del año.</p>
+                </div>
+                <div class="border-top border-secondary pt-3 mt-3">
+                    <span class="text-white d-block small"><strong>Atención en línea:</strong></span>
+                    <span class="text-muted small">Lun a Vie: 8:00 AM - 6:00 PM</span>
+                </div>
+            </div>
+
+            <!-- Item Normal 1 -->
+            <div class="grid-item">
+                <div>
+                    <h5 class="text-white">Nuevas Adquisiciones</h5>
+                    <p class="text-muted small">Hemos añadido más de 50 títulos de ciencia ficción y tecnología esta semana.</p>
+                </div>
+                <a asp-controller="Libros" asp-action="Novedades" class="btn btn-sm btn-outline-secondary mt-2">Ver novedades</a>
+            </div>
+
+            <!-- Item Normal 2 -->
+            <div class="grid-item">
+                <div>
+                    <h5 class="text-white">Club de Lectura</h5>
+                    <p class="text-muted small">Únete a nuestras salas de debate virtuales el próximo viernes a las 7:00 PM.</p>
+                </div>
+                <a asp-controller="Home" asp-action="Comunidad" class="btn btn-sm btn-outline-secondary mt-2">Participar</a>
+            </div>
+        </div>
+    </section>
 </div>
-
-

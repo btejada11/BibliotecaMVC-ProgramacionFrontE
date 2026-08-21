@@ -1,0 +1,16 @@
+﻿@using BibliotecaMVC.Models
+
+<div class="card h-100 shadow-sm border-0 transition-card" style="background-color: #1e1e1e; color: #fff; border-radius: 12px;">
+    <div class="card-body d-flex flex-column p-4">
+        <div class="mb-3 fs-3">@Model.Icono</div>
+        <h4 class="card-title h5 font-weight-bold text-white">@Model.Titulo</h4>
+        <p class="card-text text-muted small flex-grow-1">@Model.Descripcion</p>
+
+        @if (!string.IsNullOrEmpty(Model.TextoEnlace) && !string.IsNullOrEmpty(Model.Accion))
+        {
+            <a asp-controller="@Model.Controlador" asp-action="@Model.Accion" class="text-primary mt-3 font-weight-bold btn-link-reusable" style="text-decoration: none;">
+                @Model.TextoEnlace →
+            </a>
+        }
+    </div>
+</div>

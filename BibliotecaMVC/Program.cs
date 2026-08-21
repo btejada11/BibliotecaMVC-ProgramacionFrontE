@@ -1,7 +1,15 @@
+using BibliotecaMVC.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register the repository as a singleton service
+builder.Services.AddSingleton<IRepositorioLibro, ReposiorioEnMemoria>();
+
+// Register the AutorEnMemoria service as a scoped serviceblue
+builder.Services.AddSingleton<IAutorService, AutorEnMemoria>();
 
 var app = builder.Build();
 

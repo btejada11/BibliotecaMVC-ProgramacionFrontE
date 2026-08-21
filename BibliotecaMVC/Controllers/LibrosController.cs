@@ -1,34 +1,45 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BibliotecaMVC.Models;
+using System.Collections.Generic;
+using BibliotecaMVC.Repositories;
 
 namespace BibliotecaMVC.Controllers
 {
     public class LibrosController : Controller
     {
-        public static List<Libro> _libros = new List<Libro>
-        {
-            new Libro { ID = 1, Titulo = "Cien Años de Soledad", Autor = "Gabriel García Márquez", Categoria = "Novela", Precio = 19.99m, Disponible = true },
-            new Libro { ID = 2, Titulo = "La Casa de los Espíritus", Autor = "Isabel Allende", Categoria = "Novela", Precio = 14.99m, Disponible = true },
-            new Libro { ID = 3, Titulo = "El Amor en los Tiempos del Cólera", Autor = "Gabriel García Márquez", Categoria = "Novela", Precio = 17.99m, Disponible = false }
-        };
+        private readonly IRepositorioLibro _repositorio;
 
+        // El repositorio se recibe por inyección de dependencias
+        public LibrosController(IRepositorioLibro repositorio)
+        {
+            _repositorio = repositorio;
+        }
+
+        // Muestra la lista de libros
         public IActionResult Index()
         {
-            return View(_libros);
+            var libros = _repositorio.ObtenerTodos();
+            return View(libros);
         }
+
+        // Muestra el detalle de un libro
         public IActionResult Details(int id)
         {
-            var libro = _libros.FirstOrDefault(x => x.ID == id);
+            var libro = _repositorio.ObtenerLibroPorId(id);
             if (libro == null)
             {
                 return NotFound("Libro no encontrado");
             }
             return View(libro);
         }
+
+        // Muestra el formulario de creación
         public IActionResult Create()
         {
             return View();
         }
+
+        // Procesa la creación del libro
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Libro libro)
@@ -37,30 +48,27 @@ namespace BibliotecaMVC.Controllers
             {
                 return View(libro);
             }
+
             libro.Disponible = true;
 
-            if (_libros.Any())
-            {
-                libro.ID = _libros.Max(x => x.ID) + 1;
-            }
-            else
-            {
-                libro.ID = 1;
-            }
-            _libros.Add(libro);
+            // Usamos el método del repositorio para agregar (la asignación de ID debe ir en el repo o base de datos)
+            _repositorio.Agregar(libro);
 
             return RedirectToAction(nameof(Index));
-
         }
+
+        // Muestra el formulario de edición
         public IActionResult Edit(int id)
         {
-            var libro = _libros.FirstOrDefault(x => x.ID == id);
+            var libro = _repositorio.ObtenerLibroPorId(id);
             if (libro == null)
             {
                 return NotFound("Libro no encontrado");
             }
             return View(libro);
         }
+
+        // Procesa la edición del libro
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Libro libro)
@@ -69,23 +77,23 @@ namespace BibliotecaMVC.Controllers
             {
                 return View(libro);
             }
-            var libroExistente = _libros.FirstOrDefault(l => l.ID == libro.ID);
+
+            var libroExistente = _repositorio.ObtenerLibroPorId(libro.ID);
             if (libroExistente == null)
             {
                 return NotFound("Libro no encontrado");
             }
-            libroExistente.ID = libro.ID;
-            libroExistente.Titulo = libro.Titulo;
-            libroExistente.Autor = libro.Autor;
-            libroExistente.Categoria = libro.Categoria;
-            libroExistente.Precio = libro.Precio;
-            libroExistente.Disponible = libro.Disponible;
+
+            // Actualizamos los datos usando el repositorio
+            _repositorio.Actualizar(libro);
 
             return RedirectToAction(nameof(Index));
         }
+
+        // Muestra la vista de confirmación de eliminación
         public IActionResult Delete(int id)
         {
-            var libro = _libros.FirstOrDefault(l => l.ID == id);
+            var libro = _repositorio.ObtenerLibroPorId(id);
             if (libro == null)
             {
                 return NotFound("Libro no encontrado");
@@ -93,18 +101,17 @@ namespace BibliotecaMVC.Controllers
             return View(libro);
         }
 
+        // Procesa la eliminación definitiva
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteDeVelda(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var libro = _libros.FirstOrDefault(l => l.ID == id);
+            var libro = _repositorio.ObtenerLibroPorId(id);
             if (libro != null)
             {
-                _libros.Remove(libro);
+                _repositorio.Eliminar(id);
             }
             return RedirectToAction(nameof(Index));
-
         }
-
     }
 }

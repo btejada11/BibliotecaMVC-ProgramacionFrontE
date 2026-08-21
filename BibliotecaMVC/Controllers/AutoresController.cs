@@ -1,41 +1,50 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using BibliotecaMVC.Models;
+using BibliotecaMVC.Repositories; // 1. Asegúrate de incluir el espacio de nombres de tu interfaz
 
 namespace BibliotecaMVC.Controllers
 {
     public class AutoresController : Controller
     {
-        private static List<Autor> _autores = new List<Autor>
+        // 2. Declaramos el servicio como una variable privada de solo lectura
+        private readonly IAutorService _autorService;
+
+        // 3. Modificamos el constructor para recibir la interfaz (Inyección de Dependencias)
+        public AutoresController(IAutorService autorService)
         {
-            new Autor { Id = 1, Nombre = "Gabriel", Apellido = "García Márquez", Nacionalidad = "Colombiana", FechaNacimiento = new DateTime(1927, 3, 6), Activo = false },
-            new Autor { Id = 2, Nombre = "Isabel", Apellido = "Allende", Nacionalidad = "Chilena", FechaNacimiento = new DateTime(1942, 8, 2), Activo = true },
-            new Autor { Id = 3, Nombre = "Mario", Apellido = "Vargas Llosa", Nacionalidad = "Peruana", FechaNacimiento = new DateTime(1936, 3, 28), Activo = true }
-        };
+            _autorService = autorService;
+        }
+
         public IActionResult Index()
         {
-            return View(_autores);
+            // Cambiado: Ahora le pide los datos al servicio
+            var autores = _autorService.ObtenerTodos();
+            return View(autores);
         }
 
         public IActionResult Details(int id)
         {
-            var autor = _autores.FirstOrDefault(x => x.Id == id);
+            // Cambiado: Busca usando el servicio
+            var autor = _autorService.ObtenerAutorPorId(id);
             if (autor == null)
             {
                 return NotFound("Autor no encontrado");
             }
             return View(autor);
-
         }
+
         public IActionResult Edit(int id)
         {
-            var autor = _autores.FirstOrDefault(a => a.Id == id);
+            // Cambiado: Busca usando el servicio
+            var autor = _autorService.ObtenerAutorPorId(id);
             if (autor == null)
             {
                 return NotFound("Autor no encontrado");
             }
             return View(autor);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Autor autor)
@@ -44,17 +53,16 @@ namespace BibliotecaMVC.Controllers
             {
                 return View(autor);
             }
-            var autorExistente = _autores.FirstOrDefault(a => a.Id == autor.Id);
+
+            // Cambiado: Primero verificamos si existe mediante el servicio
+            var autorExistente = _autorService.ObtenerAutorPorId(autor.Id);
             if (autorExistente == null)
             {
                 return NotFound("Autor no encontrado");
             }
-            autorExistente.Id = autor.Id;
-            autorExistente.Nombre = autor.Nombre;
-            autorExistente.Apellido = autor.Apellido;
-            autorExistente.Nacionalidad = autor.Nacionalidad;
-            autorExistente.FechaNacimiento = autor.FechaNacimiento;
-            autorExistente.Activo = autor.Activo;
+
+            // Cambiado: Delegamos la actualización de los datos al servicio
+            _autorService.Actualizar(autor);
 
             return RedirectToAction(nameof(Index));
         }
@@ -63,6 +71,7 @@ namespace BibliotecaMVC.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Autor autor)
@@ -71,24 +80,20 @@ namespace BibliotecaMVC.Controllers
             {
                 return View(autor);
             }
+
+            // Mantenemos la regla de negocio que tenías originalmente
             autor.Activo = true;
 
-            if (_autores.Any())
-            {
-                autor.Id = _autores.Max(x => x.Id) + 1;
-            }
-            else
-            {
-                autor.Id = 1;
-            }
-            _autores.Add(autor);
+            // Cambiado: El servicio ahora se encarga de calcular el Id y guardarlo
+            _autorService.Agregar(autor);
 
             return RedirectToAction(nameof(Index));
-
         }
+
         public IActionResult Delete(int id)
         {
-            var autor = _autores.FirstOrDefault(a => a.Id == id);
+            // Cambiado: Busca usando el servicio
+            var autor = _autorService.ObtenerAutorPorId(id);
             if (autor == null)
             {
                 return NotFound("Autor no encontrado");
@@ -97,16 +102,13 @@ namespace BibliotecaMVC.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken] // Es buena práctica mantener o agregar esto por seguridad
         public IActionResult DeleteDeVelda(int id)
         {
-            var autor = _autores.FirstOrDefault(a => a.Id == id);
-            if (autor != null)
-            {
-                _autores.Remove(autor);
-            }
-            return RedirectToAction(nameof(Index));
+            // Cambiado: Delegamos la eliminación directa al servicio
+            _autorService.Eliminar(id);
 
+            return RedirectToAction(nameof(Index));
         }
     }
 }
-    

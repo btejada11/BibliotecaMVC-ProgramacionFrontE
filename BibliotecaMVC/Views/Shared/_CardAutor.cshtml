@@ -1,0 +1,15 @@
+﻿@using BibliotecaMVC.Models
+
+<div class="card h-100 text-center border-0 shadow-sm transition-card" style="background-color: #252526; color: #fff; border-radius: 12px; overflow: hidden;">
+    <div class="position-relative pt-4">
+        <img src="@Model.RutaImagen" alt="@Model.Nombre" class="rounded-circle img-thumbnail bg-secondary border-0" style="width: 110px; height: 110px; object-fit: cover;">
+    </div>
+    <div class="card-body p-4">
+        <h4 class="h5 text-white font-weight-bold mb-1">@Model.Nombre</h4>
+        <p class="text-primary small mb-3">@Model.RolOEspecialidad</p>
+        <p class="text-muted small mb-0 line-clamp-3">@Model.BiografiaBreve</p>
+    </div>
+    <div class="card-footer bg-transparent border-0 pb-4">
+        <a asp-controller="Autores" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-light rounded-pill px-3">Ver Perfil</a>
+    </div>
+</div>

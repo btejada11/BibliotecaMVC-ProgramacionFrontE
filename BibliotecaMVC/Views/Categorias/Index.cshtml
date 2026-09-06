@@ -4,41 +4,119 @@
     ViewData["Title"] = "Categorias";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Lista de Categorías</h2>
-</div>
-<a class="btn btn-primary" asp-controller="Categorias" asp-action="Create">Agregar Categoria</a>
+<style>
+   
+</style>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var categoria in Model)
-        {
-            <tr>
-                <td>@categoria.ID</td>
-                <td>@categoria.Nombre</td>
-                <td>@categoria.Descripcion</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<!-- Encabezado fuera de la tarjeta -->
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <div>
+        <h2 class="fw-bold m-0 text-dark">Categorías</h2>
+        <p class="text-muted small m-0">Administra y organiza los módulos de libros del sistema</p>
+    </div>
+    <a class="btn btn-primary px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 fw-semibold" asp-controller="Categorias" asp-action="Create">
+        <span>+ Agregar Categoría</span>
+    </a>
+</div>
+
+<!-- Contenedor principal estilo tarjeta moderna -->
+<div class="card custom-card shadow-sm overflow-hidden mb-4">
+    <div class="table-responsive">
+        <table class="table custom-table m-0">
+            <thead>
+                <tr>
+                    <th class="ps-4" style="width: 100px;">ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th class="text-end pe-4" style="width: 180px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-5">
+                            No hay categorías registradas en este momento.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var categoria in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <span class="badge-id">#@categoria.ID</span>
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-dark">@categoria.Nombre</span>
+                            </td>
+                            <td>
+                                <span class="text-secondary">@(string.IsNullOrEmpty(categoria.Descripcion) ? "Sin descripción" : categoria.Descripcion)</span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a class="btn btn-light btn-sm rounded-pill px-3 fw-medium border" asp-action="Edit" asp-route-id="@categoria.ID">
+                                        Editar
+                                    </a>
+                                    <button class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-medium" onclick="confirmarEliminar(@categoria.ID, '@categoria.Nombre')">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Formulario oculto para procesar la eliminación de forma segura -->
+<form id="formEliminar" asp-action="Delete" method="post" style="display:none;">
+    <input type="hidden" id="eliminarId" name="id" />
+</form>
 
 @section Scripts {
     <script>
+        // Mensaje de éxito optimizado con el nuevo estilo visual
         var mensaje = '@(TempData["SuccessMessage"] ?? "")';
         if (mensaje) {
             Swal.fire({
                 icon: 'success',
-                title: 'Éxito',
+                title: '¡Operación realizada!',
                 text: mensaje,
-                timer: 5000,
-                showConfirmButton: false
+                timer: 2500,
+                showConfirmButton: false,
+                background: '#ffffff',
+                customClass: {
+                    popup: 'rounded-4'
+                }
+            });
+        }
+
+        // Confirmación de eliminación estilizada para hacer juego con el entorno
+        function confirmarEliminar(id, nombre) {
+            Swal.fire({
+                title: '¿Eliminar categoría?',
+                text: `Esta acción quitará de forma permanente la categoría "${nombre}".`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e53e3e',
+                cancelButtonColor: '#718096',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                background: '#ffffff',
+                customClass: {
+                    popup: 'rounded-4',
+                    confirmButton: 'rounded-3 px-4',
+                    cancelButton: 'rounded-3 px-4'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('eliminarId').value = id;
+                    document.getElementById('formEliminar').submit();
+                }
             });
         }
     </script>

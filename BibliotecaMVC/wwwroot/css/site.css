@@ -746,3 +746,42 @@ body {
         border-left: 3px solid var(--accent-orange);
     }
 }
+
+.custom-card {
+    border: none;
+    border-radius: 16px;
+    background-color: #ffffff;
+}
+
+.custom-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    background-color: #f8f9fa !important;
+    color: #495057;
+    border-bottom: 2px solid #edf2f7;
+}
+
+.custom-table td {
+    vertical-align: middle;
+    color: #2d3748;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.custom-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+    .custom-table tbody tr:hover {
+        background-color: #fcfcfd !important;
+    }
+
+.badge-id {
+    background-color: #edf2f7;
+    color: #4a5568;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 8px;
+}

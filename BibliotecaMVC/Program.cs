@@ -1,15 +1,22 @@
 using BibliotecaMVC.Repositories;
+using BibliotecaMVC.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddControllersWithViews();
 
-// Register the repository as a singleton service
-builder.Services.AddSingleton<IRepositorioLibro, ReposiorioEnMemoria>();
 
-// Register the AutorEnMemoria service as a scoped serviceblue
-builder.Services.AddSingleton<IAutorService, AutorEnMemoria>();
+builder.Services.AddDbContext<BibliotecaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BibliotecaDB")));
+
+
+builder.Services.AddScoped<IRepositorioLibro, RepositorioLibro>();
+
+
+builder.Services.AddScoped<IAutorService, AutorEnMemoria>();
+
 
 var app = builder.Build();
 
@@ -17,7 +24,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -32,6 +38,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

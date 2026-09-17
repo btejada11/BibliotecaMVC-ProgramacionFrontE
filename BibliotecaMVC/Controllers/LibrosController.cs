@@ -1,31 +1,36 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; // Necesario para operaciones de EF Core
 using BibliotecaMVC.Models;
+using BibliotecaMVC.Data; // Asegura el acceso a tu BibliotecaContext
 using System.Collections.Generic;
-using BibliotecaMVC.Repositories;
+using System.Linq;
 
 namespace BibliotecaMVC.Controllers
 {
     public class LibrosController : Controller
     {
-        private readonly IRepositorioLibro _repositorio;
+        // 1. Reemplazamos el repositorio por el DbContext nativo
+        private readonly BibliotecaContext _context;
 
-        // El repositorio se recibe por inyección de dependencias
-        public LibrosController(IRepositorioLibro repositorio)
+        // 2. El contexto se recibe por inyección de dependencias
+        public LibrosController(BibliotecaContext context)
         {
-            _repositorio = repositorio;
+            _context = context;
         }
 
-        // Muestra la lista de libros
+        // Muestra la lista de libros (Actividad 2)
         public IActionResult Index()
         {
-            var libros = _repositorio.ObtenerTodos();
+            // Consultamos la tabla directamente desde la base de datos SQL Server
+            var libros = _context.Libros.ToList();
             return View(libros);
         }
 
         // Muestra el detalle de un libro
         public IActionResult Details(int id)
         {
-            var libro = _repositorio.ObtenerLibroPorId(id);
+            // Buscamos el libro directamente en el DbSet de la base de datos
+            var libro = _context.Libros.FirstOrDefault(l => l.ID == id);
             if (libro == null)
             {
                 return NotFound("Libro no encontrado");
@@ -33,13 +38,13 @@ namespace BibliotecaMVC.Controllers
             return View(libro);
         }
 
-        // Muestra el formulario de creación
+        // Muestra el formulario de creación (Actividad 3)
         public IActionResult Create()
         {
             return View();
         }
 
-        // Procesa la creación del libro
+        // Procesa la creación del libro (Actividad 3)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Libro libro)
@@ -49,10 +54,12 @@ namespace BibliotecaMVC.Controllers
                 return View(libro);
             }
 
+            // Mantenemos tu lógica original para el estado por defecto
             libro.Disponible = true;
 
-            // Usamos el método del repositorio para agregar (la asignación de ID debe ir en el repo o base de datos)
-            _repositorio.Agregar(libro);
+            // 3. Reemplazamos la llamada del repositorio por los métodos nativos de EF Core
+            _context.Libros.Add(libro); // Prepara la entidad en memoria
+            _context.SaveChanges();     // Envía y guarda los cambios reales en SQL Server
 
             return RedirectToAction(nameof(Index));
         }
@@ -60,7 +67,7 @@ namespace BibliotecaMVC.Controllers
         // Muestra el formulario de edición
         public IActionResult Edit(int id)
         {
-            var libro = _repositorio.ObtenerLibroPorId(id);
+            var libro = _context.Libros.FirstOrDefault(l => l.ID == id);
             if (libro == null)
             {
                 return NotFound("Libro no encontrado");
@@ -78,14 +85,22 @@ namespace BibliotecaMVC.Controllers
                 return View(libro);
             }
 
-            var libroExistente = _repositorio.ObtenerLibroPorId(libro.ID);
+            // Buscamos la entidad existente en la base de datos para modificarla
+            var libroExistente = _context.Libros.FirstOrDefault(l => l.ID == libro.ID);
             if (libroExistente == null)
             {
                 return NotFound("Libro no encontrado");
             }
 
-            // Actualizamos los datos usando el repositorio
-            _repositorio.Actualizar(libro);
+            // Mapeamos los campos de tu formulario al registro de la base de datos
+            libroExistente.Titulo = libro.Titulo;
+            libroExistente.Autor = libro.Autor;
+            libroExistente.Categoria = libro.Categoria;
+            libroExistente.Precio = libro.Precio;
+            libroExistente.Disponible = libro.Disponible;
+
+            // Guardamos los cambios de la actualización
+            _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
@@ -93,7 +108,7 @@ namespace BibliotecaMVC.Controllers
         // Muestra la vista de confirmación de eliminación
         public IActionResult Delete(int id)
         {
-            var libro = _repositorio.ObtenerLibroPorId(id);
+            var libro = _context.Libros.FirstOrDefault(l => l.ID == id);
             if (libro == null)
             {
                 return NotFound("Libro no encontrado");
@@ -106,10 +121,12 @@ namespace BibliotecaMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var libro = _repositorio.ObtenerLibroPorId(id);
+            var libro = _context.Libros.FirstOrDefault(l => l.ID == id);
             if (libro != null)
             {
-                _repositorio.Eliminar(id);
+                // Removemos el registro usando EF Core
+                _context.Libros.Remove(libro);
+                _context.SaveChanges();
             }
             return RedirectToAction(nameof(Index));
         }

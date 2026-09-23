@@ -10,6 +10,6 @@ namespace BibliotecaMVC.Repositories
         void Agregar(Autor autor);
         void Actualizar(Autor autor);
         void Eliminar(int id);
-
+        Task ObtenerAutorPorIdAsync(int id);
     }
 }

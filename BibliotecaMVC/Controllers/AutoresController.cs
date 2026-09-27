@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using BibliotecaMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using BibliotecaMVC.Repositories; // 1. Asegúrate de incluir el espacio de nombres de tu interfaz
 
 namespace BibliotecaMVC.Controllers
 {
+    [Authorize]
     public class AutoresController : Controller
     {
         // 2. Declaramos el servicio como una variable privada de solo lectura

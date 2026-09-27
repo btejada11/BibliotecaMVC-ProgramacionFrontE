@@ -49,12 +49,18 @@
                                     <a asp-action="Details" asp-route-id="@libro.ID" class="btn btn-sm btn-info text-white" title="Ver Detalles">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a asp-action="Edit" asp-route-id="@libro.ID" class="btn btn-sm btn-warning" title="Editar">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@libro.ID" class="btn btn-sm btn-danger" title="Eliminar">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@libro.ID" class="btn btn-sm btn-warning" title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@libro.ID" class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        
+                                    }
+                                    
+                                   
                                 </div>
                             </td>
                         </tr>

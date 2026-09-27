@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore; // Necesario para operaciones de EF Core
 using BibliotecaMVC.Models;
 using BibliotecaMVC.Data; // Asegura el acceso a tu BibliotecaContext
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 
 namespace BibliotecaMVC.Controllers
 {
+    [Authorize(Roles = "Admin,Bibliotecario")]
     public class LibrosController : Controller
     {
         // 1. Reemplazamos el repositorio por el DbContext nativo

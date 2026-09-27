@@ -1,6 +1,7 @@
 using BibliotecaMVC.Repositories;
 using BibliotecaMVC.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,9 +9,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 
+
 builder.Services.AddDbContext<BibliotecaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BibliotecaDB")));
 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<BibliotecaContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+  
+});
 
 builder.Services.AddScoped<IRepositorioLibro, RepositorioLibro>();
 
@@ -29,6 +40,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

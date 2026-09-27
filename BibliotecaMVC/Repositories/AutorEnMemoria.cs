@@ -50,5 +50,10 @@ namespace BibliotecaMVC.Repositories
                 _autores.Remove(autorAEliminar);
             }
         }
+
+        public Task ObtenerAutorPorIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

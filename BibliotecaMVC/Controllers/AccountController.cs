@@ -1,4 +1,5 @@
-﻿using BibliotecaMVC.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using BibliotecaMVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -42,12 +43,15 @@ namespace BibliotecaMVC.Controllers
             {
                 return View(model);
             }
+
             var user = await _userManager.FindByNameAsync(model.UserNameOrEmail)
                 ?? await _userManager.FindByEmailAsync(model.UserNameOrEmail);
+
             if (user is not null)
             {
-
+                // AQUÍ FALTABA ESTA LÍNEA: Ejecutar el inicio de sesión y guardarlo en 'result'
                 var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {
                     if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
@@ -65,11 +69,10 @@ namespace BibliotecaMVC.Controllers
                     ModelState.AddModelError(string.Empty, "La cuenta está bloqueada temporalmente debido a múltiples intentos fallidos de inicio de sesión. Por favor, inténtelo de nuevo más tarde.");
                     return View(model);
                 }
-
             }
+
             ModelState.AddModelError(string.Empty, "Nombre de usuario o contraseña incorrectos.");
             return View(model);
-
         }
 
         [HttpGet]

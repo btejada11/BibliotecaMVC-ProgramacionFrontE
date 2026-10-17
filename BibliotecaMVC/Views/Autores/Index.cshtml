@@ -9,8 +9,10 @@
         <h1 class="display-5 text-white mb-0">@ViewData["Title"]</h1>
         <p class="lead text-muted mb-0">Hay <span class="badge bg-indigo text-gradient fs-4 px-0">@Model.Count()</span> autores registrados.</p>
     </div>
-
+    @if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
+                                    {
     <a class="btn btn-custom" asp-action="Create"><i class="bi bi-plus-lg"></i> Nuevo autor +</a>
+                                    }
 </div>
 
 
@@ -37,12 +39,15 @@
                     <a asp-action="Details" asp-route-id="@autor.Id" class="btn btn-sm btn-outline-info px-3">
                         Ver
                     </a>
-                    <a asp-action="Edit" asp-route-id="@autor.Id" class="btn btn-sm btn-outline-warning px-3">
-                        Editar
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@autor.Id" class="btn btn-sm btn-outline-danger px-3">
-                        Eliminar
-                    </a>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@autor.Id" class="btn btn-sm btn-outline-warning px-3">
+                            Editar
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@autor.Id" class="btn btn-sm btn-outline-danger px-3">
+                            Eliminar
+                        </a>
+                    }
                 </div>
             </div>
         </div>

@@ -36,6 +36,8 @@ namespace BibliotecaMVC.Controllers
             return View(autor);
         }
 
+        [Authorize(Roles = "Bibliotecario, Admin")]
+
         public IActionResult Edit(int id)
         {
             // Cambiado: Busca usando el servicio
@@ -49,6 +51,7 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Bibliotecario, Admin")]
         public IActionResult Edit(Autor autor)
         {
             if (!ModelState.IsValid)
@@ -69,6 +72,8 @@ namespace BibliotecaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Bibliotecario, Admin")]
+
         public IActionResult Create()
         {
             return View();
@@ -76,6 +81,7 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Bibliotecario, Admin")]
         public IActionResult Create(Autor autor)
         {
             if (!ModelState.IsValid)
@@ -92,6 +98,8 @@ namespace BibliotecaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Bibliotecario, Admin")]
+
         public IActionResult Delete(int id)
         {
             // Cambiado: Busca usando el servicio
@@ -104,7 +112,9 @@ namespace BibliotecaMVC.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken] // Es buena práctica mantener o agregar esto por seguridad
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Bibliotecario, Admin")]
+        // Es buena práctica mantener o agregar esto por seguridad
         public IActionResult DeleteDeVelda(int id)
         {
             // Cambiado: Delegamos la eliminación directa al servicio

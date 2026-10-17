@@ -13,5 +13,8 @@
     <dt>Disponible para préstamo</dt>
     <dd>@(Model.Disponible ? "Sí" : "No")</dd>
 </dl>
+@if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
+                                    {
 <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary">Editar</a>
+                                    }
 <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>

@@ -2,6 +2,7 @@ using BibliotecaMVC.Repositories;
 using BibliotecaMVC.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

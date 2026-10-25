@@ -1,25 +1,88 @@
 ﻿@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = "Ups... Algo se rompió";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<style>
+    /* Animación de rotación continua simulando un engranaje descompuesto */
+    @@keyframes spin-error {
+        0% {
+            transform: rotate(0deg);
+        }
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+    /* Animación de pulso de alerta */
+    @@keyframes pulse-slow {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .animated-warning {
+        display: inline-block;
+        animation: pulse-slow 2s infinite ease-in-out;
+    }
+
+        .animated-warning:hover {
+            animation: spin-error 1s linear infinite;
+            cursor: cubic-bezier(0.1, 0.7, 1.0, 0.1);
+        }
+</style>
+
+<div class="container my-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-7 p-5 border rounded-4 shadow bg-white position-relative">
+            <div class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark px-3 py-2 shadow border">
+                CÓDIGO 500: CRISIS EXISTENCIAL DEL SERVIDOR
+            </div>
+
+            <div class="mb-4 mt-2">
+                <div class="animated-warning">
+                    <!-- Icono de tuerca/exclamación en amarillo brillante -->
+                    <svg xmlns="http://w3.org" width="90" height="90" fill="currentColor" class="text-warning bi bi-exclamation-octagon-fill" viewBox="0 0 16 16">
+                        <path d="M11.46.146A.5.5 0 0 0 11.107 0H4.893a.5.5 0 0 0-.353.146L.146 4.54A.5.5 0 0 0 0 4.893v6.214a.5.5 0 0 0 .146.353l4.394 4.394a.5.5 0 0 0 .353.146h6.214a.5.5 0 0 0 .353-.146l4.394-4.394a.5.5 0 0 0 .146-.353V4.893a.5.5 0 0 0-.146-.353zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+                    </svg>
+                </div>
+            </div>
+
+            <h1 class="display-6 fw-bold text-dark mb-3">¡Vaya! Los libros cobraron vida propia</h1>
+            
+            <p class="lead text-muted mb-4">
+                El sistema sufrió un tropiezo inesperado. Sospechamos fuertemente que un ratón de biblioteca masticó un cable de red o que los estantes digitales se cayeron todos a la vez.
+            </p>
+
+            <!-- Bloque seguro de producción: Oculta la base de datos pero da el RequestID -->
+            <div class="alert alert-warning border-0 bg-light p-3 text-start mb-4 rounded-3">
+                <div class="d-flex align-items-center mb-1">
+                    <span class="fw-bold text-dark me-2">🔍 Bitácora del Guardián:</span>
+                    <span class="text-muted small">Los detalles técnicos técnicos han sido encriptados en los logs del servidor por seguridad.</span>
+                </div>
+                
+                @if (Model?.ShowRequestId == true)
+                {
+                    <div class="mt-2">
+                        <span class="text-secondary small">Dale este código secreto al programador si lo ves llorando en los pasillos:</span>
+                        <code class="d-block bg-dark text-warning p-2 rounded mt-1 font-monospace fw-bold">@Model.RequestId</code>
+                    </div>
+                }
+            </div>
+
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-warning text-dark fw-bold px-4 me-sm-2 shadow-sm">
+                    Ir a un lugar seguro (Inicio)
+                </a>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">
+                    Intentarlo de nuevo rezando un poco
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

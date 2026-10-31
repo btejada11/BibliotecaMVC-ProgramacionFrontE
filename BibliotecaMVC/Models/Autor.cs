@@ -13,6 +13,7 @@ namespace BibliotecaMVC.Models
         [StringLength(100, ErrorMessage = "El apellido no puede tener más de 100 caracteres.")]
         public string Apellido { get; set; }
         [Required]
+        [StringLength(50, ErrorMessage = "La nacionalidad no puede tener más de 50 caracteres.")]
         public string Nacionalidad { get; set; }
         [Required]
         [DataType(DataType.Date)]

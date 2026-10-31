@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BibliotecaMVC.Models;
-using BibliotecaMVC.Data;
-using System.Collections.Generic;
+using BibliotecaMVC.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -12,22 +10,26 @@ namespace BibliotecaMVC.Controllers
 {
     public class LibrosController : Controller
     {
-        private readonly BibliotecaContext _context;
+        private readonly IRepositorioLibro _repositorio;
         private readonly ILogger<LibrosController> _logger;
 
-        // Se inyecta ILogger preservando la dependencia existente del contexto de datos
-        public LibrosController(BibliotecaContext context, ILogger<LibrosController> logger)
+        // Se inyecta el repositorio (interfaz) en lugar del DbContext.
+        public LibrosController(IRepositorioLibro repositorio, ILogger<LibrosController> logger)
         {
-            _context = context;
+            _repositorio = repositorio;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retrieves the complete list of books.
+        /// </summary>
+        /// <returns>A view displaying all books.</returns>
         public IActionResult Index()
         {
             _logger.LogInformation("Iniciando consulta: Recuperando el listado completo de libros.");
             try
             {
-                var libros = _context.Libros.ToList();
+                var libros = _repositorio.ObtenerTodos();
                 return View(libros);
             }
             catch (Exception ex)
@@ -42,7 +44,7 @@ namespace BibliotecaMVC.Controllers
             _logger.LogInformation("Iniciando consulta: Buscando detalles del libro con ID {id}.", id);
             try
             {
-                var libro = _context.Libros.FirstOrDefault(l => l.ID == id);
+                var libro = _repositorio.ObtenerLibroPorId(id);
                 if (libro == null)
                 {
                     _logger.LogWarning("Situación inesperada: No se encontró el libro con ID {id} durante la consulta de detalles.", id);
@@ -80,8 +82,7 @@ namespace BibliotecaMVC.Controllers
             try
             {
                 libro.Disponible = true;
-                _context.Libros.Add(libro);
-                _context.SaveChanges();
+                _repositorio.Agregar(libro);
 
                 _logger.LogInformation("Operación exitosa: El libro '{Titulo}' con ID {ID} fue registrado correctamente.", libro.Titulo, libro.ID);
                 return RedirectToAction(nameof(Index));
@@ -99,7 +100,7 @@ namespace BibliotecaMVC.Controllers
             _logger.LogInformation("Iniciando flujo de edición (GET): Buscando libro con ID {id} para cargar el formulario.", id);
             try
             {
-                var libro = _context.Libros.FirstOrDefault(l => l.ID == id);
+                var libro = _repositorio.ObtenerLibroPorId(id);
                 if (libro == null)
                 {
                     _logger.LogWarning("Situación inesperada: No se encontró el libro con ID {id} para iniciar su edición.", id);
@@ -117,7 +118,7 @@ namespace BibliotecaMVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Bibliotecario, Admin")]
-        public IActionResult Edit(Libro libro) // Nota: Asegúrate de mapear al nombre exacto de tu modelo 'Libro'
+        public IActionResult Edit(Libro libro)
         {
             _logger.LogInformation("Iniciando operación de edición (POST): Procesando cambios para el libro con ID {id}.", libro.ID);
 
@@ -129,21 +130,14 @@ namespace BibliotecaMVC.Controllers
 
             try
             {
-                var libroExistente = _context.Libros.FirstOrDefault(l => l.ID == libro.ID);
+                var libroExistente = _repositorio.ObtenerLibroPorId(libro.ID);
                 if (libroExistente == null)
                 {
                     _logger.LogWarning("Situación inesperada: Intento fallido de editar un libro inexistente con ID {id}.", libro.ID);
                     return NotFound("Libro no encontrado");
                 }
 
-                // Actualización de campos
-                libroExistente.Titulo = libro.Titulo;
-                libroExistente.Autor = libro.Autor;
-                libroExistente.Categoria = libro.Categoria;
-                libroExistente.Precio = libro.Precio;
-                libroExistente.Disponible = libro.Disponible;
-
-                _context.SaveChanges();
+                _repositorio.Actualizar(libro);
                 _logger.LogInformation("Operación exitosa: Cambios guardados para el libro con ID {id}.", libro.ID);
 
                 return RedirectToAction(nameof(Index));
@@ -166,7 +160,7 @@ namespace BibliotecaMVC.Controllers
             _logger.LogInformation("Iniciando flujo de eliminación (GET): Solicitando confirmación de borrado para el libro con ID {id}.", id);
             try
             {
-                var libro = _context.Libros.FirstOrDefault(l => l.ID == id);
+                var libro = _repositorio.ObtenerLibroPorId(id);
                 if (libro == null)
                 {
                     _logger.LogWarning("Situación inesperada: No se encontró el libro con ID {id} para mostrar la vista de confirmación de eliminación.", id);
@@ -189,15 +183,14 @@ namespace BibliotecaMVC.Controllers
             _logger.LogInformation("Iniciando operación de eliminación (POST): Confirmando baja definitiva del libro con ID {id}.", id);
             try
             {
-                var libro = _context.Libros.FirstOrDefault(l => l.ID == id);
+                var libro = _repositorio.ObtenerLibroPorId(id);
                 if (libro == null)
                 {
                     _logger.LogWarning("Situación inesperada: Intento de eliminar un libro que ya no existe en el sistema con ID {id}.", id);
                     return NotFound("Libro no encontrado");
                 }
 
-                _context.Libros.Remove(libro);
-                _context.SaveChanges();
+                _repositorio.Eliminar(id);
 
                 _logger.LogInformation("Operación exitosa: El libro con ID {id} ha sido removido de la base de datos.", id);
                 return RedirectToAction(nameof(Index));

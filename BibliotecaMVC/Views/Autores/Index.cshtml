@@ -10,9 +10,14 @@
         <p class="lead text-muted mb-0">Hay <span class="badge bg-indigo text-gradient fs-4 px-0">@Model.Count()</span> autores registrados.</p>
     </div>
     @if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
-                                    {
-    <a class="btn btn-custom" asp-action="Create"><i class="bi bi-plus-lg"></i> Nuevo autor +</a>
-                                    }
+    {
+    <a class="btn btn-custom" asp-action="Create"><i class="bi bi-plus-lg"></i> Nuevo autor</a>
+    <div>
+            <a class="btn btn-outline-danger" asp-action="Reportes" target="_blank" rel="noopener noreferrer"><i class="bi bi-file-earmark-pdf"></i> Generar reporte PDF</a>
+            <a class="btn btn-danger" asp-action="DescargarReportes" target="_blank" rel="noopener noreferrer"><i class="bi bi-download"></i> Descargar reporte</a>
+    </div>
+        
+    }
 </div>
 
 

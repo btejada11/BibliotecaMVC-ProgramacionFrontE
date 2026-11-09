@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using BibliotecaMVC.Repositories;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace BibliotecaMVC.Controllers
 {
@@ -33,6 +38,124 @@ namespace BibliotecaMVC.Controllers
                 _logger.LogError(ex, "Error crítico al intentar obtener el listado de autores.");
                 throw;
             }
+        }
+
+        public IActionResult Reportes()
+        {
+            _logger.LogInformation("Iniciando generación del reporte PDF de autores.");
+            try
+            {
+                var autores = _autorService
+                    .ObtenerTodos()
+                    .OrderBy(a => a.Nombre)
+                    .ToList();
+
+                var pdf = GenerarReportes(autores);
+                return File(pdf, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al generar el reporte de autores.");
+                throw;
+            }
+        }
+
+        public IActionResult DescargarReportes()
+        {
+            _logger.LogInformation("Iniciando generación del reporte PDF de autores para descarga.");
+            try
+            {
+                var autores = _autorService
+                    .ObtenerTodos()
+                    .OrderBy(a => a.Nombre)
+                    .ToList();
+
+                var pdf = GenerarReportes(autores);
+                return File(pdf, "application/pdf", "ReporteAutores.pdf");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al generar el reporte de autores para descarga.");
+                throw;
+            }
+        }
+
+        private static IContainer CellStyle(IContainer container)
+        {
+            return container
+                .BorderBottom(1)
+                .BorderColor(Colors.Grey.Lighten4)
+                .PaddingVertical(5)
+                .PaddingHorizontal(4);
+        }
+
+        private static byte[] GenerarReportes(IReadOnlyCollection<Autor> autores)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            // Fecha y hora en que se genera/descarga el reporte
+            var fechaGeneracion = DateTime.Now;
+
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(12));
+
+                    page.Header()
+                        .Text("BibliotecaMVC - Reporte de Autores")
+                        .SemiBold().FontSize(20).FontColor(Colors.Blue.Medium);
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(50); // ID
+                            columns.RelativeColumn();   // Nombre
+                            columns.RelativeColumn();   // Apellido
+                            columns.RelativeColumn();   // Nacionalidad
+                            columns.RelativeColumn();   // Fecha de Nacimiento
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(CellStyle).Text("ID").SemiBold();
+                            header.Cell().Element(CellStyle).Text("Nombre").SemiBold();
+                            header.Cell().Element(CellStyle).Text("Apellido").SemiBold();
+                            header.Cell().Element(CellStyle).Text("Nacionalidad").SemiBold();
+                            header.Cell().Element(CellStyle).Text("Fecha de Nacimiento").SemiBold();
+                        });
+
+                        foreach (var autor in autores)
+                        {
+                            table.Cell().Element(CellStyle).Text(autor.Id.ToString());
+                            table.Cell().Element(CellStyle).Text(autor.Nombre);
+                            table.Cell().Element(CellStyle).Text(autor.Apellido);
+                            table.Cell().Element(CellStyle).Text(autor.Nacionalidad);
+                            table.Cell().Element(CellStyle).Text(autor.FechaNacimiento.ToShortDateString());
+                        }
+                    });
+
+                    page.Footer().Row(row =>
+                    {
+                        row.RelativeItem()
+                            .Text($"Generado el {fechaGeneracion:dd/MM/yyyy HH:mm}")
+                            .FontSize(10).FontColor(Colors.Grey.Darken1);
+
+                        row.RelativeItem().AlignRight().Text(text =>
+                        {
+                            text.DefaultTextStyle(x => x.FontSize(10).FontColor(Colors.Grey.Darken1));
+                            text.Span("Página ");
+                            text.CurrentPageNumber();
+                            text.Span(" de ");
+                            text.TotalPages();
+                        });
+                    });
+                });
+            }).GeneratePdf();
         }
 
         public IActionResult Details(int id)
@@ -105,7 +228,6 @@ namespace BibliotecaMVC.Controllers
             }
             catch (Exception ex)
             {
-               
                 _logger.LogError(ex, "Error al persistir los cambios del autor con ID {id} en la base de datos.", autor.Id);
                 throw;
             }
